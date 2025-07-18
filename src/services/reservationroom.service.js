@@ -1,5 +1,4 @@
-const db = require('../models');
-const ReservationRoom = db.ReservationRoom; // Mengakses model User
+const { ReservationRoom } = require("../models");
 
 exports.createReservationRoom = async (reservationRoomData) => {
     if (!reservationRoomData.user_id || !reservationRoomData.reservation_date || !reservationRoomData.room_number || !reservationRoomData.reservation_end_date) {
@@ -10,28 +9,31 @@ exports.createReservationRoom = async (reservationRoomData) => {
     return newReservasiRoom;
 };
 
-exports.getAllReservasiRoom = async () => {
+exports.getAllReservationRoom = async () => {
     const reservasiRoom = await ReservationRoom.findAll();
     return reservasiRoom;
 }
 
-// TODO: Fix
 exports.updateReservationRoom = async (reservationRoomId, reservationRoomDataToUpdate) => {
     if (!reservationRoomDataToUpdate.user_id && !reservationRoomDataToUpdate.reservation_date && !reservationRoomDataToUpdate.room_number && !reservationRoomDataToUpdate.reservation_end_date) {
         throw new Error("Tidak ada data yang diberikan untuk diperbarui.");
     }
 
-    const reservationRoom = await ReservationRoom.findByPk(reservationRoomId);
-    if (!reservationRoom) {
-        return null; // Buku tidak ditemukan
+    const [num] = await ReservationRoom.update(
+        reservationRoomDataToUpdate, {
+        where: { id: reservationRoomId }
+    });
+    
+    if (num === 1) {
+        const updatedReservationRoom = await ReservationRoom.findByPk(reservationRoomId);
+        return updatedReservationRoom; // Mengembalikan pengguna yang diperbarui 
+    } else {
+        throw new Error(`Tidak dapat memperbarui Reservasi Kamar dengan id=${reservationRoomId}. Mungkin Reservasi Kamar tidak ditemukan atau data yang diberikan tidak berubah.`);
     }
-
-    await reservationRoom.save();
-    return reservationRoom;
 }
 
 exports.deleteReservationRoom = async (reservationRoomId) => {
-    const reservationRoom = await ReservationRoom.findByPk(reservationRoomId);
+    const reservationRoom = await reservationRoom.findByPk(reservationRoomId);
     if (!reservationRoom) {
         return null; // Pengguna tidak ditemukan
     }

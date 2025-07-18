@@ -15,7 +15,7 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
     try {
-        const reservationRoom = await reservationRoomService.getAllReservasiRoom();
+        const reservationRoom = await reservationRoomService.getAllReservationRoom();
         res.status(200).json(reservationRoom);
     } catch (error) {
         res.status(500).json({ message: error.message });

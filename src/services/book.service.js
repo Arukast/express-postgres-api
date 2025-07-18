@@ -1,5 +1,4 @@
-const db = require('../models');
-const Book = db.Book; // Mengakses model User
+const { Book } = require("../models");
 
 exports.createBook = async (bookData) => {
     if (!bookData.title || !bookData.author || !bookData.quantity) {
@@ -15,19 +14,22 @@ exports.getAllBooks = async () => {
     return books;
 }
 
-// TODO: Fix
 exports.updateBook = async (bookId, bookDataToUpdate) => {
     if (!bookDataToUpdate.title && !bookDataToUpdate.author && !bookDataToUpdate.quantity) {
         throw new Error("Tidak ada data yang diberikan untuk diperbarui.");
     }
 
-    const book = await Book.findByPk(bookId);
-    if (!book) {
-        return null; // Buku tidak ditemukan
+    const [num] = await Book.update(
+        bookDataToUpdate, {
+        where: { id: bookId }
+    });
+    
+    if (num === 1) {
+        const updatedBook = await Book.findByPk(bookId);
+        return updatedBook; // Mengembalikan pengguna yang diperbarui 
+    } else {
+        throw new Error(`Tidak dapat memperbarui Buku dengan id=${bookId}. Mungkin Buku tidak ditemukan atau data yang diberikan tidak berubah.`);
     }
-
-    await book.save();
-    return book;
 }
 
 exports.deleteBook = async (bookId) => {

@@ -1,6 +1,5 @@
+const { User } = require("../models");
 const bcrypt = require('bcrypt');
-const db = require('../models');
-const User = db.User; // Mengakses model User
 
 exports.createUser = async (userData) => {
     if (!userData.email || !userData.name || !userData.password) {
@@ -27,33 +26,34 @@ exports.getAllUsers = async () => {
     return users;
 }
 
-// TODO: Fix
 exports.updateUser = async (userId, userDataToUpdate) => {
     if (!userDataToUpdate.email && !userDataToUpdate.name && !userDataToUpdate.password) {
         throw new Error("Tidak ada data yang diberikan untuk diperbarui.");
     }
 
-    const user = await User.findByPk(userId);
-    if (!user) {
-        return null; // Pengguna tidak ditemukan
-    }
-
     if (userDataToUpdate.email) {
-        user.email = userDataToUpdate.email.toLowerCase();
-    }
-    if (userDataToUpdate.name) {
-        user.name = userDataToUpdate.name;
-    }
-    if (userDataToUpdate.password) {
-        user.password = await bcrypt.hash(userDataToUpdate.password, 10);
+        userDataToUpdate.email = userDataToUpdate.email.toLowerCase();
     }
 
-    await user.save();
-    return user;
+    if (userDataToUpdate.password) {
+        userDataToUpdate.password = await bcrypt.hash(userDataToUpdate.password, 10);
+    }
+
+    const [num] = await User.update(
+        userDataToUpdate, {
+        where: { id: userId }
+    });
+    
+    if (num === 1) {
+        const updatedUser = await User.findByPk(userId);
+        return updatedUser; // Mengembalikan pengguna yang diperbarui 
+    } else {
+        throw new Error(`Tidak dapat memperbarui pengguna dengan id=${userId}. Mungkin pengguna tidak ditemukan atau data yang diberikan tidak berubah.`);
+    }
 }
 
 exports.deleteUser = async (userId) => {
-    const user = await User.findByPk(userId);
+    const user = await user.findByPk(userId);
     if (!user) {
         return null; // Pengguna tidak ditemukan
     }

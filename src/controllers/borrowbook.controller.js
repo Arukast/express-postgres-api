@@ -3,7 +3,7 @@ const borrowBookService = require('../services/borrowbook.service');
 exports.create = async (req, res) => {
     try {
         const borrowBookData = req.body;
-        const newBorrowBook = await borrowBookService.createBook(borrowBookData);
+        const newBorrowBook = await borrowBookService.createBorrowBook(borrowBookData);
         res.status(201).json(newBorrowBook);
     } catch (error) {
         if (error.message.includes('sudah terdata')) {
@@ -24,9 +24,9 @@ exports.findAll = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        const bookId = req.params.id;
+        const borrowBookId = req.params.id;
         const borrowBookDataToUpdate = req.body;
-        const updatedBorrowBook = await borrowBookService.updateBorrowBook(bookId, borrowBookDataToUpdate);
+        const updatedBorrowBook = await borrowBookService.updateBorrowBook(borrowBookId, borrowBookDataToUpdate);
         if (!updatedBorrowBook) {
             return res.status(404).json({ message: 'Buku tidak ditemukan untuk diperbarui' });
         }

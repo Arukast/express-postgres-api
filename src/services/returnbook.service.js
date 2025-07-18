@@ -1,33 +1,35 @@
-const db = require('../models');
-const returnBook = db.ReturnBook; // Mengakses model User
+const { ReturnBook } = require("../models");
 
 exports.createReturnBook = async (returnBookData) => {
     if (!returnBookData.borrowBook_id || !returnBookData.return_date || !returnBookData.status) {
         throw new Error("Id Pengembalian, Tanggal Pengembalian, Status tidak boleh kosong.");
     }
     
-    const newReturnBook = await returnBook.create(returnBookData);
+    const newReturnBook = await ReturnBook.create(returnBookData);
     return newReturnBook;
 };
 
 exports.getAllReturnBooks = async () => {
-    const returnBooks = await returnBook.findAll();
+    const returnBooks = await ReturnBook.findAll();
     return returnBooks;
 }
 
-// TODO: Fix
 exports.updateReturnBook = async (bookId, bookDataToUpdate) => {
     if (!bookDataToUpdate.borrowbook_id && !bookDataToUpdate.return_date && !bookDataToUpdate.status) {
         throw new Error("Tidak ada data yang diberikan untuk diperbarui.");
     }
 
-    const returnBook = await returnBook.findByPk(bookId);
-    if (!returnBook) {
-        return null; // Buku tidak ditemukan
+    const [num] = await ReturnBook.update(
+        bookDataToUpdate, {
+        where: { id: bookId }
+    });
+    
+    if (num === 1) {
+        const updatedBook = await ReturnBook.findByPk(bookId);
+        return updatedBook; // Mengembalikan pengguna yang diperbarui 
+    } else {
+        throw new Error(`Tidak dapat memperbarui Pengembalian Buku dengan id=${bookId}. Mungkin Pengembalian Buku tidak ditemukan atau data yang diberikan tidak berubah.`);
     }
-
-    await returnBook.save();
-    return returnBook;
 }
 
 exports.deleteReturnBook = async (bookId) => {
