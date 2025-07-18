@@ -1,16 +1,14 @@
-const { User } = require("../models");
+const { User } = require("../../models");
 const bcrypt = require('bcrypt');
 
 exports.createUser = async (userData) => {
-    if (!userData.email || !userData.name || !userData.password) {
-        throw new Error("Email, Nama, Password tidak boleh kosong.");
-    }
     // Di sini bisa ditambahkan logika bisnis, seperti hashing password
     userData.password = await bcrypt.hash(userData.password, 10);
     // atau validasi duplikasi email sebelum menyimpan.
     const lowerCaseEmail = userData.email.toLowerCase();
+    
     const existingUser = await User.findOne({ 
-        where: { email: lowerCaseEmail } 
+        where: { email: lowerCaseEmail }
     });
 
     if (existingUser) {
@@ -27,10 +25,6 @@ exports.getAllUsers = async () => {
 }
 
 exports.updateUser = async (userId, userDataToUpdate) => {
-    if (!userDataToUpdate.email && !userDataToUpdate.name && !userDataToUpdate.password) {
-        throw new Error("Tidak ada data yang diberikan untuk diperbarui.");
-    }
-
     if (userDataToUpdate.email) {
         userDataToUpdate.email = userDataToUpdate.email.toLowerCase();
     }

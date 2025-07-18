@@ -1,50 +1,51 @@
 const userService = require('../services/user.service');
+const AppError = require('../utils/AppError');
 
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
     try {
         const userData = req.body;
         const newUser = await userService.createUser(userData);
         res.status(201).json(newUser);
     } catch (error) {
         if (error.message.includes('sudah terdaftar')) {
-            return res.status(409).json({ message: error.message });
+            return next(new AppError('Email sudah terdaftar', 409));
         }
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.findAll = async (req, res) => {
+exports.findAll = async (req, res, next) => {
     try {
         const users = await userService.getAllUsers();
         res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.update = async (req, res) => {
+exports.update = async (req, res, next) => {
     try {
         const userId = req.params.id;
         const userDataToUpdate = req.body;
         const updatedUser = await userService.updateUser(userId, userDataToUpdate);
         if (!updatedUser) {
-            return res.status(404).json({ message: 'Pengguna tidak ditemukan untuk diperbarui' });
+            return next(new AppError('Pengguna tidak ditemukan untuk diperbarui', 404));
         }
         res.status(200).json(updatedUser);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
     try {
         const userId = req.params.id;
         const result = await userService.deleteUser(userId);
         if (!result) {
-            return res.status(404).json({ message: 'Pengguna tidak ditemukan untuk dihapus' });
+            return next(new AppError('Pengguna tidak ditemukan untuk dihapus', 404));
         }
         res.status(200).json({ message: 'Pengguna berhasil dihapus' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }

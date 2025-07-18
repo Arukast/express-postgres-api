@@ -1,10 +1,6 @@
-const { ReturnBook } = require("../models");
+const { ReturnBook } = require("../../models");
 
 exports.createReturnBook = async (returnBookData) => {
-    if (!returnBookData.borrowBook_id || !returnBookData.return_date || !returnBookData.status) {
-        throw new Error("Id Pengembalian, Tanggal Pengembalian, Status tidak boleh kosong.");
-    }
-    
     const newReturnBook = await ReturnBook.create(returnBookData);
     return newReturnBook;
 };
@@ -15,10 +11,6 @@ exports.getAllReturnBooks = async () => {
 }
 
 exports.updateReturnBook = async (bookId, bookDataToUpdate) => {
-    if (!bookDataToUpdate.borrowbook_id && !bookDataToUpdate.return_date && !bookDataToUpdate.status) {
-        throw new Error("Tidak ada data yang diberikan untuk diperbarui.");
-    }
-
     const [num] = await ReturnBook.update(
         bookDataToUpdate, {
         where: { id: bookId }

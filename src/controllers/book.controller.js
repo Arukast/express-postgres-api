@@ -1,50 +1,51 @@
 const bookService = require('../services/book.service');
+const AppError = require('../utils/AppError');
 
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
     try {
         const bookData = req.body;
         const newBook = await bookService.createBook(bookData);
         res.status(201).json(newBook);
     } catch (error) {
         if (error.message.includes('sudah terdata')) {
-            return res.status(409).json({ message: error.message });
+            return next(new AppError(error.message, 409));
         }
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.findAll = async (req, res) => {
+exports.findAll = async (req, res, next) => {
     try {
         const books = await bookService.getAllBooks();
         res.status(200).json(books);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.update = async (req, res) => {
+exports.update = async (req, res, next) => {
     try {
         const bookId = req.params.id;
         const bookDataToUpdate = req.body;
         const updatedBook = await bookService.updateBook(bookId, bookDataToUpdate);
         if (!updatedBook) {
-            return res.status(404).json({ message: 'Buku tidak ditemukan untuk diperbarui' });
+            next(new AppError({ message: error.message }, 404));
         }
         res.status(200).json(updatedBook);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
     try {
         const bookId = req.params.id;
         const result = await bookService.deleteBook(bookId);
         if (!result) {
-            return res.status(404).json({ message: 'Buku tidak ditemukan untuk dihapus' });
+            return next(new AppError('Buku tidak ditemukan untuk dihapus', 404));
         }
         res.status(200).json({ message: 'Buku berhasil dihapus' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }

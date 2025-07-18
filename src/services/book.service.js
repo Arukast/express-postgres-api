@@ -1,10 +1,6 @@
-const { Book } = require("../models");
+const { Book } = require("../../models");
 
 exports.createBook = async (bookData) => {
-    if (!bookData.title || !bookData.author || !bookData.quantity) {
-        throw new Error("Judul, Author, Kuantitas tidak boleh kosong.");
-    }
-    
     const newBook = await Book.create(bookData);
     return newBook;
 };
@@ -15,10 +11,6 @@ exports.getAllBooks = async () => {
 }
 
 exports.updateBook = async (bookId, bookDataToUpdate) => {
-    if (!bookDataToUpdate.title && !bookDataToUpdate.author && !bookDataToUpdate.quantity) {
-        throw new Error("Tidak ada data yang diberikan untuk diperbarui.");
-    }
-
     const [num] = await Book.update(
         bookDataToUpdate, {
         where: { id: bookId }

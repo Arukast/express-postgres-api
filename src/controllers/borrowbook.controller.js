@@ -1,50 +1,51 @@
 const borrowBookService = require('../services/borrowbook.service');
+const AppError = require('../utils/AppError');
 
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
     try {
         const borrowBookData = req.body;
         const newBorrowBook = await borrowBookService.createBorrowBook(borrowBookData);
         res.status(201).json(newBorrowBook);
     } catch (error) {
         if (error.message.includes('sudah terdata')) {
-            return res.status(409).json({ message: error.message });
+            return next(new AppError('Buku ini sudah terdata sebagai buku yang dipinjam.', 409));
         }
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.findAll = async (req, res) => {
+exports.findAll = async (req, res, next) => {
     try {
         const books = await borrowBookService.getAllBorrowBooks();
         res.status(200).json(books);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.update = async (req, res) => {
+exports.update = async (req, res, next) => {
     try {
         const borrowBookId = req.params.id;
         const borrowBookDataToUpdate = req.body;
         const updatedBorrowBook = await borrowBookService.updateBorrowBook(borrowBookId, borrowBookDataToUpdate);
         if (!updatedBorrowBook) {
-            return res.status(404).json({ message: 'Buku tidak ditemukan untuk diperbarui' });
+            return next(new AppError(`Tidak dapat memperbarui Peminjaman Buku dengan id=${borrowBookId}. Mungkin Peminjaman Buku tidak ditemukan atau data yang diberikan tidak berubah.`, 404));
         }
         res.status(200).json(updatedBorrowBook);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
     try {
-        const bookId = req.params.id;
-        const result = await borrowBookService.deleteBorrowBook(bookId);
+        const borrowBookId = req.params.id;
+        const result = await borrowBookService.deleteBorrowBook(borrowBookId);
         if (!result) {
-            return res.status(404).json({ message: 'Buku tidak ditemukan untuk dihapus' });
+            return next(new AppError(`Tidak dapat menghapus Peminjaman Buku dengan id=${borrowBookId}. Mungkin Peminjaman Buku tidak ditemukan.`, 404));
         }
         res.status(200).json({ message: 'Buku berhasil dihapus' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }

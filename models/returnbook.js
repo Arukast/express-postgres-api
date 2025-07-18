@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     borrowBook_id: DataTypes.INTEGER,
     return_date: DataTypes.DATE,
     status: {
-      type: DataTypes.ENUM('ONTIME', 'OVERDUE'),
+      type: DataTypes.ENUM('On Time', 'Late'),
     }
   }, {
     sequelize,

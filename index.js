@@ -17,13 +17,15 @@
 //     console.log(`Server berjalan di http://localhost:${port}`);
 // });
 
+require('dotenv').config();
 const express = require('express');
-const db = require('./src/models');
+const db = require('./models');
 const userRoutes = require('./src/routes/user.routes');
 const bookRoutes = require('./src/routes/book.routes');
 const borrowRoutes = require('./src/routes/borrowbook.routes');
 const returnBookRoutes = require('./src/routes/returnbook.routes');
 const reservationRoomRoutes = require('./src/routes/reservationroom.routes');
+const authRoutes = require('./src/routes/auth.routes');
 
 const app = express();
 // Middleware untuk mem-parsing request body JSON
@@ -40,6 +42,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/borrow-books', borrowRoutes);
 app.use('/api/return-books', returnBookRoutes);
 app.use('/api/reservation-room', reservationRoomRoutes);
+app.use('/api/auth', authRoutes);
 // Sinkronisasi database (opsional, lebih baik menggunakan migrasi di produksi)
 // db.sequelize.sync();
 const PORT = process.env.PORT || 3000;

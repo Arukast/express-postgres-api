@@ -24,7 +24,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       status: {
-        type: Sequelize.ENUM('ONTIME', 'OVERDUE'),
+        type: Sequelize.ENUM('On Time', 'Late'),
         allowNull: true
       },
       createdAt: {

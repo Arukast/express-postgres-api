@@ -1,10 +1,6 @@
-const { BorrowBook } = require("../models");
+const { BorrowBook } = require("../../models");
 
 exports.createBorrowBook = async (borrowBookData) => {
-    if (!borrowBookData.book_id || !borrowBookData.user_id || !borrowBookData.borrow_date || !borrowBookData.due_date) {
-        throw new Error("Id Buku, Id User, Tanggal Pinjam, Tanggal Batas Pinjam tidak boleh kosong.");
-    }
-    
     const newBorrowBook = await BorrowBook.create(borrowBookData);
     return newBorrowBook;
 };
@@ -15,10 +11,6 @@ exports.getAllBorrowBooks = async () => {
 }
 
 exports.updateBorrowBook = async (borrowBookId, borrowBookDataToUpdate) => {
-    if (!borrowBookDataToUpdate.book_id && !borrowBookDataToUpdate.book_id && !borrowBookDataToUpdate.borrow_date && !borrowBookDataToUpdate.due_date) {
-        throw new Error("Tidak ada data yang diberikan untuk diperbarui.");
-    }
-
     const [num] = await BorrowBook.update(
         borrowBookDataToUpdate, {
         where: { id: borrowBookId }
